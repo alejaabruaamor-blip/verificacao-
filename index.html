@@ -82,5 +82,35 @@
   });
 })();
 </script>
+<script>
+(function () {
+  var ID = "1397380142545642";
+  var regulated = "AT BE BG HR CY CZ DK EE FI FR DE GR HU IS IE IT LI LV LT LU MT NL NO PL PT RO SK SI ES SE GB CH".split(" ");
+  function start() {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', ID, {}, {agent: 'lovable'});
+    fbq('track', 'PageView');
+  }
+  fetch('/cdn-cgi/trace', { signal: AbortSignal.timeout(2000), cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.text() : ''; })
+    .then(function (text) {
+      var m = /^loc=([A-Z]{2})$/m.exec(text || '');
+      var region = m ? m[1] : null;
+      if (region && region !== 'XX' && region !== 'T1' && regulated.indexOf(region) === -1) start();
+    })
+    .catch(function () { return null; })
+    .then(function () {
+      // Sem /cdn-cgi/trace (ex.: Vercel): usa o fuso do aparelho; fuso das Américas = fora das regiões que exigem consentimento
+      if (window.fbq) return;
+      var tz = '';
+      try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+      if (tz.indexOf('America/') === 0) start();
+    });
+})();
+</script>
 </body>
 </html>
